@@ -1,0 +1,73 @@
+#step-1
+
+# Databricks notebook source
+from pyspark import SparkConf, SparkContext
+
+# COMMAND ----------
+
+conf = SparkConf().setAppName("Read File")
+
+# COMMAND ----------
+
+sc = SparkContext.getOrCreate(conf=conf)
+
+# COMMAND ----------
+
+text = sc.textFile('/FileStore/tables/sample.txt')
+
+# COMMAND ----------
+
+print('\n\n\n')
+print(text.collect())
+print('\n\n\n')
+
+===================================================Step-2======================================================
+
+# Databricks notebook source
+from pyspark import SparkConf, SparkContext
+conf = SparkConf().setAppName("Read File")
+sc = SparkContext.getOrCreate(conf=conf)
+
+# COMMAND ----------
+
+rdd = sc.textFile('/FileStore/tables/sample.txt')
+
+# COMMAND ----------
+
+rdd2 = rdd.map(lambda x: x.split(' '))
+rdd2.collect()
+
+===========================================================Step-3================================================================
+
+path = "/FileStore/tables/textfile.txt"
+rdd = sc.textFile(path)
+rdd.collect()
+
+# COMMAND ----------
+
+def quiz(x):
+  # x -> 'great'
+  l = x.split(' ') # l -> ['great']
+  l2 = []
+  for s in l:
+    l2.append(len(s))
+  return l2
+  
+rdd2 = rdd.map(quiz)
+rdd2.collect()
+
+========================================Step3====================================================================
+
+from pyspark import SparkConf, SparkContext
+conf = SparkConf().setAppName("FlatMap")
+sc = SparkContext.getOrCreate(conf=conf)
+
+# COMMAND ----------
+
+rdd = sc.textFile('/FileStore/tables/sample.txt')
+rdd.collect()
+
+# COMMAND ----------
+
+flatMappedRdd = rdd.flatMap(lambda x: x.split(" "))
+flatMappedRdd.collect()
