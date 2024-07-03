@@ -77,8 +77,23 @@ if __name__ == "__main__":
         --executor-memory 1G
         wordCount.py /user/cloudera/wordCount.txt  /user/cloudera/destination_path
 
-    Note: The above syntax must be typed in one line, and this is static allocation resources.In product the static allocation resources is not applied.
-        because of huge volume of data
+    Note: The above syntax must be typed in one line, and this is a static allocation of resources. In product, the static allocation of resources is not applied.
+        because of the huge volume of data.
+
+        9. Dynamic Resource Allocation:
+
+            spark-submit --master yarn --deploy-mode cluster
+            --driver-memory 1GB
+            --driver-core 4
+            --executor-memory 2GB
+            --executor cores 5
+            --conf "spark.dynamicAllocation.enabled=true"
+            --conf "spark.dynamicAllocation.minExecutors = 1"
+            --conf "spark.dynamicAllocation.maxExecutors = 100"
+            --conf "spark.shuffle.service.enabled=true"
+             wordCount.py /user/cloudera/wordCount.txt  /user/cloudera/destination_path
+
+
 
 
 **Interview Question**
