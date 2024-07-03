@@ -9,16 +9,17 @@ def getTotalSalesInCalifornia(lst):
     rdd4 = rdd3.map(lambda lstItem: float(lstItem[3]))
     totalsales = rdd4.sum()
     print("Total sales in California : ", round(totalsales, 2))
+    return totalsales
 
 
 def getMaxSoldProductsInTexasState(lst):
-
     rdd5 = lst.filter(lambda lstItem: 'texas' in (lstItem[7].lower()))
     rdd6 = rdd5.map(lambda lstItem: (lstItem[5], 1))
-    rdd7 = rdd6.reduceByKey(lambda x, y: x+y)
+    rdd7 = rdd6.reduceByKey(lambda x, y: x + y)
     rdd8 = rdd7.sortBy(lambda item: item[1], False, 1)
     maxproductSoldInTexas = rdd8.first()
-    print(f"Product {maxproductSoldInTexas[0]} has maximum sales of {maxproductSoldInTexas[1]}")
+    print("Product", maxproductSoldInTexas[0], "has maximum sales of", maxproductSoldInTexas[1])
+    return maxproductSoldInTexas
 
 
 if __name__ == "__main__":
@@ -29,17 +30,18 @@ if __name__ == "__main__":
 
     sc.setLogLevel("ERROR")  # setLogLevel() is used to remove unnecessary log messages in the console
 
-    # sourcepath = sys.argv[1]
-    # destinationpath = sys.argv[2]
+    sourcepath = sys.argv[1]
+    destinationpath = sys.argv[2]
 
-    pathfile = "D:/Spark_Udemy/txs.csv"
-
-    rdd = sc.textFile(pathfile)
+    rdd = sc.textFile(sourcepath)
 
     rdd1 = rdd.map(lambda line: line.split(","))
-    rdd1.cache() #cache() is used when which rdd is used multiple times
-    print(rdd1.collect())
-    print(" ")
-    getTotalSalesInCalifornia(rdd1)
-    print(" ")
-    getMaxSoldProductsInTexasState(rdd1)
+    rdd1.cache()
+
+    # Get total sales in California and save as text file
+    totalSalesCA = getTotalSalesInCalifornia(rdd1)
+    sc.parallelize([totalSalesCA]).saveAsTextFile(destinationpath + "/totalSalesCA")
+
+    # Get maximum sold products in Texas state and save as text file
+    maxSoldProductTX = getMaxSoldProductsInTexasState(rdd1)
+    sc.parallelize([maxSoldProductTX]).saveAsTextFile(destinationpath + "/maxSoldProductTX")
