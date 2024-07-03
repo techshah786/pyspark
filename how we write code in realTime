@@ -1,0 +1,45 @@
+import pyspark
+from pyspark.sql import SparkSession
+import sys
+
+
+def getTotalSalesInCalifornia(lst):
+    # Filter the RDD for rows where the state is 'California'
+    rdd3 = lst.filter(lambda lstItem: 'california' in lstItem[7].lower())
+    rdd4 = rdd3.map(lambda lstItem: float(lstItem[3]))
+    totalsales = rdd4.sum()
+    print("Total sales in California : ", round(totalsales, 2))
+
+
+def getMaxSoldProductsInTexasState(lst):
+
+    rdd5 = lst.filter(lambda lstItem: 'texas' in (lstItem[7].lower()))
+    rdd6 = rdd5.map(lambda lstItem: (lstItem[5], 1))
+    rdd7 = rdd6.reduceByKey(lambda x, y: x+y)
+    rdd8 = rdd7.sortBy(lambda item: item[1], False, 1)
+    maxproductSoldInTexas = rdd8.first()
+    print(f"Product {maxproductSoldInTexas[0]} has maximum sales of {maxproductSoldInTexas[1]}")
+
+
+if __name__ == "__main__":
+    # Create SparkSession
+    spark = SparkSession.builder.appName("Pyspark Total Sales in California").getOrCreate()
+
+    sc = spark.sparkContext
+
+    sc.setLogLevel("ERROR")  # setLogLevel() is used to remove unnecessary log messages in the console
+
+    # sourcepath = sys.argv[1]
+    # destinationpath = sys.argv[2]
+
+    pathfile = "D:/Spark_Udemy/txs.csv"
+
+    rdd = sc.textFile(pathfile)
+
+    rdd1 = rdd.map(lambda line: line.split(","))
+    rdd1.cache() #cache() is used when which rdd is used multiple times
+    print(rdd1.collect())
+    print(" ")
+    getTotalSalesInCalifornia(rdd1)
+    print(" ")
+    getMaxSoldProductsInTexasState(rdd1)
