@@ -1,0 +1,8 @@
+Note: shell spark-submit is done in production environment
+
+Step-1: Open putty and create a file with .sh extension. For exaple:
+
+      vi  shell_spark-submit.sh
+
+  Step-2: write spark-submit code. For exaple:
+
