@@ -1,0 +1,64 @@
+
+Step-1: Write the code in pycharm development environment. For example: file name is "wordCount.py" and in the the file the code is below.
+
+import pyspark
+from pyspark import SparkContext, SparkConf
+from pyspark.sql import SparkSession
+
+
+import sys
+# import sys is used to input data where data set is stored like hdfs
+# and output data where data set will be stored after transformation
+
+if __name__ == "__main__":
+    # Create SparkSession
+    spark = SparkSession.builder \
+        .appName("Pyspark Word Count") \
+        .getOrCreate()
+
+    sc = spark.sparkContext
+
+    sourcepath = sys.argv[1]
+    destinationpath = sys.argv[2]
+
+    words = sc.textFile(sourcepath).flatMap(lambda line: line.split(" "))
+    wordCount = words.map(lambda word: (word, 1)).reduceByKey(lambda a, b: a + b)
+
+    wordCount.saveAsTextFile(destinationpath)
+
+    # Stop the SparkContext
+    sc.stop()
+
+
+    Step-2: Run clodera and in the cmd type "ifconfig" that will provide you IP address
+
+    Step-3: Open winSCP (note: winSCP is app) and confige the setting to connect cloudera or hdfs (hadoop distribution file system). Just drug the .py file to hdfs.
+
+    Step-4. Open putty and type "hdfs dfs -lrt |trail" and enter. You can see the .py is present in hdfs.
+            and create a textFile named "wordCount.txt" typing in putty "vi wordCount.txt" and write two or three lines. and Save and exit the file
+
+         5. Note: When we create a file, this is stored in local system. We need to keep the created file in hdfs. We can do that in following way.
+                  hdfs dfs -put wordCount.txt /user/cloudera
+            Now, file is inside hdfs
+
+          6. Note: If you get error, change the " safe mode off" using following command: hdfs dfsadmin -safemode leave
+         
+         7. spark-submit: There are three mode to submit the spark-submit. For Example: local, yarn client and yarn cluster
+
+           a. In local, processing and scheduling are taking care by spark. local mode is used for testing purpose.
+           The spark-submit systax: spark-submit --master local[*] .py_file sourcePath destinationPath. For example:
+           
+            spark-submit --master local[*] wordCount.py /user/cloudera/wordCount.txt  /user/cloudera/destination_path
+
+            Note: We can see the output using following command: hdfs dfs -cat /user/cloudera/destination_path/part=00000
+
+            b. In yarn client, processing part is taken care by spark and scheduling part is taken care by yarn. The yarn
+            client mode is used for short running jobs and this mode is used for Development environment. The spark-submit is like below.
+
+            spark-submit --master yarn --deploy-mode wordCount.py /user/cloudera/wordCount.txt  /user/cloudera/destination_path
+
+            c. In yarn cluster, the spark-submit is done for production environment and it is long running jobs. The syntax for yarn cluster is below.
+
+             spark-submit --master yarn --deploy-mode cluster wordCount.py /user/cloudera/wordCount.txt  /user/cloudera/destination_path
+
+          
