@@ -1,8 +1,47 @@
-Note: shell spark-submit is done in production environment
+Note: Shell spark-submit is done in a production environment
 
-Step-1: Open putty and create a file with .sh extension. For exaple:
+#Static process:
+Step-1: Open Putty and create a file with the .sh extension. For example:
 
       vi  shell_spark-submit.sh
 
-  Step-2: write spark-submit code. For exaple:
+Step 2: write spark-submit code. For example:
+
+       spark-submit --master local[*] wordCount.py /user/cloudera/wordCount.txt  /user/cloudera/destination_path
+
+Save and exit.
+
+Step-3: sh shell_spark-submit.sh
+=================================================================================================================
+Dynamic process: is done in production. Because in dynamic process we do the parameterization so that
+
+      every time we don't need to change the sourcePath and destination path
+
+Step-1: Open Putty and create a file with the .sh extension. For example:
+
+      vi  shell_spark-submit.sh
+
+Step 2: write spark-submit code. For example:
+
+       spark-submit --master local[*] wordCount.py $1 $2
+
+Save and exit.
+
+Step-3: sh shell_spark-submit.sh  /user/cloudera/wordCount.txt  /user/cloudera/destination_path
+
+here, SourePath: /user/cloudera/wordCount.txt
+
+      DestinationPath: /user/cloudera/destination_path
+
+==============================================================================================================================
+
+How to configure spark-submit in high level production.
+
+Step-1: create spark-submit and test our code.
+Step-2: Create a shell script such as shell_spark-submit.sh --> config file --> config ID -- Autosys Job
+Step-3: Create HTCH_SPARK-HDFS_PIPELINE_JX -->Config ID --> spark-submit is done at 8 am Everyday.
+Step-4: 8 am spark-submit --> Autosys job run --> Trigger Config ID --> Config file -->shell_spark-submit.sh --> spark-submit.
+
+Note: Autosys is another application
+
 
