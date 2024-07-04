@@ -1,0 +1,6 @@
+How to run file in hadoop shell
+
+Step-1: type "pyspark" that will provide "Sparkcontext" and "SparkSession" by default.
+Step-2: df = spark.read.json("file:///home/cloudera/devices.json")
+Step-3: df.show()
+  
