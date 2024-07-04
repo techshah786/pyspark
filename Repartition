@@ -1,0 +1,42 @@
+Note: The important of repartition: For axample, when we have raw data and its volume is 10 MB, and after tranformaing the size of data is 5 MB.
+When we save this file, the file will be distributed into various partions, but problme is that client want to get all data in one single file.
+In this scenario we need to do repartion. Example:
+
+from pyspark.sql import SparkSession
+from pyspark.sql.types import StructType, StructField, IntegerType, StringType, DoubleType
+
+import sys
+
+if __name__ == "__main__":
+    spark = SparkSession.builder.appName("reparation").getOrCreate()
+    source_path = sys.argv[1]
+    destination_path = sys.argv[2]
+
+    # Define the schema
+    schema = StructType([
+        StructField("id", IntegerType(), True),
+        StructField("date", StringType(), True),
+        StructField("barcode", IntegerType(), True),
+        StructField("currency", DoubleType(), True),
+        StructField("product", StringType(), True),
+        StructField("category", StringType(), True),
+        StructField("city", StringType(), True),
+        StructField("state", StringType(), True),
+        StructField("transaction type", StringType(), True)
+    ])
+
+    df = spark.read.format("csv").schema(schema).option("header", True).load(source_path)
+
+    df.setLogLevel("ERROR")
+
+    df1 = df.filter(df.state == "California")
+    df1.show(5, truncate=False)
+    df1 = df
+    df1.repartition(1).saveAsTextFile(destination_path)
+
+Step-1: Open Putty and create .sh file ( for example: vi shell_repartition.sh for shell spark-submit
+
+
+
+
+
