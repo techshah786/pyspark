@@ -1,0 +1,1 @@
+Note: Directly we cannot implement sql in spark data frame. We need to create a createOrReplaceTempView and then we can apply sql
