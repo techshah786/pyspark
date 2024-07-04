@@ -27,14 +27,20 @@ if __name__ == "__main__":
 
     df = spark.read.format("csv").schema(schema).option("header", True).load(source_path)
 
-    df.setLogLevel("ERROR")
-
     df1 = df.filter(df.state == "California")
     df1.show(5, truncate=False)
-    df1 = df
-    df1.repartition(1).saveAsTextFile(destination_path)
+    df1.repartition(1).write.mode("overwrite").csv(destination_path)
 
-Step-1: Open Putty and create .sh file ( for example: vi shell_repartition.sh for shell spark-submit
+
+Step-1: Open Putty and create .sh file ( for example: vi shell_repartition.sh for shell spark-submit.
+
+spark-submit --master local[*] repartionJob.py $1 $2
+
+Save and exit
+
+Step-3: sh shell_repartition.sh /user/cloudera/txs.csv /user/cloudera/repartionResult
+
+Step-4: hdfs dfs -ls /user/cloudera/repartionResult
 
 
 
