@@ -1,0 +1,50 @@
+# save this file: dataframe1.py
+from pyspark.sql import SparkSession
+
+import sys
+
+if __name__ == "__main__":
+    sourcePath = sys.argv[1]
+    destination_path = sys.argv[2]
+    spark = SparkSession.builder.appName("DataFrameCreation1").master("local").getOrCreate()
+
+    sc = spark.sparkContext
+
+    sc.setLogLevel("Error")
+
+    df = spark.read.format("csv").option("inferSchema", True).option("delimiter", ",") \
+        .load(sourcePath).toDF("custId", "fname", "lname", "age", "city", "state")
+
+    # how to save df in destination
+
+    df.write.save(destination_path)
+    df = spark.read.parquet(destination_path)
+
+    df.show(5, truncate=False)
+
+Step-1: Create a file name df_spark-submit.sh using shell and syntax: vi df_spark-shell
+  and wrtie following code: spark-submit --master yarn --deploy-mode client dataframe1.py $1 $2
+
+  Save and exit
+
+Step-2: run the following code:
+  sh df_spark-submit.sh /user/cloudera/customer_records_UPD.csv /user/cloudera/dataframejob
+
+Step-3: Check dataframjob folder whether created or not, using following command:
+
+hdfs dfs -cat /user/cloudera/dataframejob
+
+Step-4: type: pyspark
+
+Step-5:
+  df=spark.read.parquet("hdfs:///user/cloudera/dataframejob/part-00000-9542e6d8-75de-45a1-9d46-c2dd92295bdf-c000.snappy.parquet")
+
+Step-6:
+
+  df.show()
+
+Note: Normal way we can not content of parquet file. hdfs dfs -cat user/cloudera/dataframejob/part-00000-9542e6d8-75de-45a1-9d46-c2dd92295bdf-c000.snappy.parquet
+
+  will not work.
+
+  
