@@ -1,0 +1,25 @@
+from pyspark.sql import SparkSession
+
+if __name__ == "__main__":
+    spark = SparkSession.builder.appName("ConvertRDDToDF").master("local").getOrCreate()
+    sc = spark.sparkContext  # by default SparkSession has sparkContext
+    sc.setLogLevel("Error")  # remove uncessary log message from console
+
+    data = [
+        ("alice", 29, "TechCorp"),
+        ("bob", 35, "HealthInc"),
+        ("charlie", 28, "EduServices"),
+        ("david", 42, "FinanceGroup"),
+        ("eva", 31, "RetailCo"),
+        ("frank", 45, "ConsultingLLC"),
+        ("grace", 38, "TechCorp"),
+        ("henry", 30, "AutoMakers"),
+        ("irene", 27, "FoodSupply"),
+        ("jack", 33, "RealEstatePro"),
+    ]
+
+    rdd = sc.parallelize(data)
+
+    df = rdd.toDF(["Username", "Age", "Working_company"])
+
+    df.show()
