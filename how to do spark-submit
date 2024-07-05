@@ -55,7 +55,7 @@ if __name__ == "__main__":
             b. In yarn client, the processing part is taken care of by spark, and the scheduling part is taken care of by yarn. The yarn
             client mode is used for short-running jobs and this mode is used for a Development environment. The spark-submit is like the one below.
 
-            spark-submit --master yarn --deploy-mode wordCount.py /user/cloudera/wordCount.txt  /user/cloudera/destination_path
+            spark-submit --master yarn --deploy-mode client wordCount.py /user/cloudera/wordCount.txt  /user/cloudera/destination_path
 
             c. In the yarn cluster, the spark-submit is done for the production environment and it is long running job. The syntax for the yarn cluster is below.
 
