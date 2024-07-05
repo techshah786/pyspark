@@ -1,0 +1,2 @@
+1. Default file format of pyspark sql is parquet file format.
+By default, spark cann't read Avro and XML file format.
