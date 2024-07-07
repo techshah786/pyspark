@@ -1,0 +1,110 @@
+File 1:
+
+from pyspark.sql import SparkSession
+from pyspark.sql.types import *
+from pyspark.sql.functions import *
+import sys
+
+
+class Extraction_data:
+
+    def __init__(self, spark):
+        self.spark = spark
+
+    def ingest_data_csv(self):
+        print("Ingestion data from a csv file")
+
+        source_path = sys.argv[1]
+
+        schema = StructType([
+            StructField("ID", IntegerType(), True),
+            StructField("FirstName", StringType(), True),
+            StructField("LastName", StringType(), True),
+            StructField("Age", IntegerType(), True),
+            StructField("City", StringType(), True),
+            StructField("State", StringType(), True)
+        ])
+
+        customer_df = self.spark.read.format("csv") \
+            .option("inferSchema", True) \
+            .schema(schema) \
+            .load(source_path)
+
+        customer_df.show()
+
+        return customer_df
+
+
+
+  File 2:
+
+from pyspark.sql import SparkSession
+from pyspark.sql.types import *
+
+
+class Transform_data_ETL:
+
+    def __init__(self, spark):
+        self.spark = spark
+
+    def transform_etl_df(self, df):
+        print("Transformation started")
+
+        df1 = df.select("ID", "FirstName", "LastName", "City", "State")
+
+        df2 = df1.na.drop()
+
+        return df2
+
+
+  File 3:
+
+from pyspark.sql import SparkSession
+from pyspark.sql.types import *
+
+import sys
+
+class Persist_data_ETL:
+
+    def __init__(self, spark):
+        self.spark = spark
+
+    def persist_data_etl(self, df):
+        # Ensure the DataFrame is written correctly to the specified path
+
+        destination_path = sys.argv[2]
+        df.write.option("header", True).mode("overwrite").csv(destination_path)
+
+  File 4:
+
+from pyspark.sql import SparkSession
+import ingestion, transform_data, loading_data
+
+
+class Pipeline_ETL:
+
+    def run_pipeline_etl(self):
+        print("Running My ETL processing through pyspark")
+
+        ingest_process = ingestion.Extraction_data(self.spark)
+        df = ingest_process.ingest_data_csv()
+
+        # transformation process
+        transform_process = transform_data.Transform_data_ETL(self.spark)
+        transform_df = transform_process.transform_etl_df(df)
+        transform_df.show()
+
+        # loading data
+        persist_process = loading_data.Persist_data_ETL(self.spark)
+        persist_process.persist_data_etl(transform_df)
+
+        return
+
+    def create_spark_session(self):
+        self.spark = SparkSession.builder.appName("ETL Processing").getOrCreate()
+
+
+if __name__ == "__main__":
+    pipeline_obj = Pipeline_ETL()
+    pipeline_obj.create_spark_session()
+    pipeline_obj.run_pipeline_etl()
