@@ -1,0 +1,54 @@
+For example, we have json file and content is like below.
+
+{
+  "name": "John Doe",
+  "age": 30,
+  "email": "john.doe@example.com",
+  "address": {
+    "street": "123 Main Street",
+    "city": "Anytown",
+    "state": "Anystate",
+    "postalCode": "12345"
+  },
+  "hobbies": [
+    "reading",
+    "swimming",
+    "traveling"
+  ]
+}
+
+
+
+To handle complex JSON and read JSON file, we use .option("multiline", True). For example:
+
+
+from pyspark.sql import SparkSession
+
+if __name__ == "__main__":
+    spark = SparkSession.builder.appName("Complex Json").getOrCreate()
+
+    spark.sparkContext.setLogLevel("Error")
+
+    path = "E:\\DOWNLOAD DOCUMENTS AND APPS\\complexJson.json"
+
+    df = spark.read.format("json").option("multiline", True).load(path)
+
+    df.show()
+
+    # transforming  struct data
+
+    df1 = df.select(df["address.street"], df["address.city"], df["address.state"], df["address.postalCode"])
+
+    df1.show()
+
+    # Transforming array data
+
+    df2 = df.select(df["hobbies"][0], df["hobbies"][1], df["hobbies"][2])
+    df2.show()
+
+    # Combined all data
+
+    df_combined = df.select("name","age","email",df["address.street"], df["address.city"], df["address.state"],\
+                            df["address.postalCode"],df["hobbies"][0], df["hobbies"][1], df["hobbies"][2])
+
+    df_combined.show()
