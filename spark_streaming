@@ -1,0 +1,42 @@
+Process 1: How to display on console
+
+
+
+from pyspark import SparkConf, SparkContext
+from pyspark.streaming import StreamingContext
+
+def main():
+    # Set up the Spark configuration and context
+    conf = SparkConf().setAppName("B12 streaming").setMaster("local[*]")
+    sc = SparkContext(conf=conf)
+    sc.setLogLevel("ERROR")
+
+    # Create a StreamingContext with a batch interval of 10 seconds
+    ssc = StreamingContext(sc, 10)
+
+    # Monitor the specified directory for new text files
+    lines = ssc.textFileStream("file:///D://Spark_Udemy//Excel_data_files//new_data_file.txt")
+
+    # Process the data: Split lines into words, map each word to a pair (word, 1), and reduce by key to count occurrences
+    words = lines.flatMap(lambda line: line.split(" "))
+    wordCounts = words.map(lambda word: (word, 1)).reduceByKey(lambda x, y: x + y)
+
+    # Print the word counts on console
+    wordCounts.pprint()
+
+    # Start the streaming context and await termination
+    ssc.start()
+    ssc.awaitTermination()
+
+if __name__ == "__main__":
+    main()
+
+=====================================================================================================================================================================================================
+
+
+Process 2:
+
+
+
+
+
